@@ -1,0 +1,38 @@
+.git
+.venv
+__pycache__
+.pytest_cache
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+output
+logs
+config/api-keys.env
+
+# Keep private runtime state and local credentials out of image layers.
+.env
+.env.*
+config/resume.yaml
+config/cloudflare.env
+ops/cloudflare/*.json
+ops/cloudflare/config.yml
+output_localtest
+logs_localtest
+data/tmp
+
+# Built inside the image (Dockerfile stage "web"); never copy local builds or dependencies
+web/node_modules
+web/test-results
+web/playwright-report
+app/spa_dist
+
+# Not needed at runtime
+tests
+.github
+.ruff_cache
+.mypy_cache
+.coverage
+output_demo
+logs_demo
+.hypothesis

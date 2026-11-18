@@ -1,0 +1,42 @@
+# Copy this file to config/resume.yaml and customize with your profile.
+profile:
+  name: Casey Chen
+  email: caseychen@example.com
+  phone: +1-647-555-0137
+  location: Ottawa, ON
+  linkedin: linkedin.com/in/caseychen
+  github: github.com/caseychen
+skills:
+  programming:
+  - Python
+  - TypeScript
+  - SQL
+  - Go
+  frameworks:
+  - Flask
+  - FastAPI
+  - React
+  - Node.js
+  tools:
+  - Docker
+  - AWS
+  - PostgreSQL
+  - GitHub Actions
+experience:
+- company: TrueNorth Analytics
+  title: Software Engineer
+  duration: 2022-05 - present
+  responsibilities:
+  - Built and maintained APIs serving production traffic
+  - Improved ETL reliability with retry and alerting
+  - Reduced cloud cost by optimizing job schedules
+- company: HarborStack
+  title: Software Developer
+  duration: 2020-01 - 2022-04
+  responsibilities:
+  - Implemented backend services and integrations
+  - Added test coverage for critical business modules
+education:
+- degree: BSc Computer Science
+  institution: University of Waterloo
+  graduation: 2019-06

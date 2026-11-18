@@ -1,0 +1,34 @@
+# Read-only public demo: sample data, mock providers, no keys, no secrets.
+#   docker compose -f docker-compose.demo.yml up --build     ->  http://127.0.0.1:5021/app/
+name: gmc-demo
+
+services:
+  app_demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gmc-demo-app
+    # Seeds a fresh database on every start, then serves it read-only (DEMO_MODE refuses all writes).
+    command:
+      - sh
+      - -c
+      - python scripts/seed_demo.py && exec gunicorn --bind 0.0.0.0:5001 --workers 2 --threads 4 run:app
+    ports:
+      - "127.0.0.1:5021:5001"
+    environment:
+      DEMO_MODE: "true"
+      SETTINGS_FILE: config/settings.demo.yaml
+      RESUME_FILE: config/resume.yaml.example
+      SESSION_COOKIE_SECURE: "false"
+    read_only: true
+    tmpfs:
+      - /app/output_demo:uid=10001,gid=10001
+      - /app/logs_demo:uid=10001,gid=10001
+      - /tmp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5001/readyz', timeout=5)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s

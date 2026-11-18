@@ -1,0 +1,12 @@
+# Toolchain for this project (https://mise.jdx.dev). `mise install` fetches these versions once;
+# they are shared by every project that pins the same version and never replace the machine default.
+# CI reads this file too (jdx/mise-action). Docker pins the same Python via its base image.
+[tools]
+python = "3.12.15"
+node = "24.22.0"
+
+[env]
+# Entering the folder activates this project's .venv (created on first use).
+_.python.venv = { path = ".venv", create = true }
+# Playwright keeps its test browser inside web/node_modules instead of the user's cache folder.
+PLAYWRIGHT_BROWSERS_PATH = "0"

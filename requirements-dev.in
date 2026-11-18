@@ -1,0 +1,12 @@
+# Development / CI tools on top of the runtime dependencies. Regenerate with:
+#   .venv/bin/pip-compile --generate-hashes --strip-extras requirements-dev.in
+-r requirements.in
+pytest==9.1.1
+pytest-cov
+ruff
+mypy
+types-PyYAML
+pip-tools
+openapi-spec-validator
+pypdf
+schemathesis

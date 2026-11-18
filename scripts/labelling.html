@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Label jobs</title>
+<style>
+  body { font: 16px/1.5 system-ui, sans-serif; margin: 0; background: #edf2f4; color: #0f1b21; }
+  main { max-width: 46rem; margin: 0 auto; padding: 1.25rem; }
+  .bar { height: 6px; background: #c9d6dc; border-radius: 3px; overflow: hidden; }
+  .bar div { height: 100%; background: #075a62; transition: width .2s; }
+  .card { background: #fff; border-radius: 16px; padding: 1.25rem; margin: 1rem 0; box-shadow: 0 6px 20px rgb(24 48 60 / .12); }
+  h1 { font-size: 1.35rem; margin: 0 0 .25rem; } .meta { color: #34444d; margin: 0 0 .75rem; }
+  .desc { white-space: pre-wrap; } a { color: #075a62; }
+  .row { display: flex; flex-wrap: wrap; gap: .5rem; margin: .5rem 0; align-items: center; }
+  .row > span { min-width: 6.5rem; color: #34444d; }
+  button { font: inherit; min-height: 44px; padding: 0 1rem; border-radius: 999px; border: 2px solid #8499a3; background: #fff; cursor: pointer; }
+  button.on { background: #f5dc1f; border-color: #0f1b21; font-weight: 600; }
+  button.nav { border-color: transparent; background: none; text-decoration: underline; }
+  input[type=text] { font: inherit; flex: 1; min-height: 44px; padding: 0 .75rem; border-radius: 12px; border: 2px solid #8499a3; }
+  kbd { font: 12px ui-monospace, monospace; border: 1px solid #8499a3; border-radius: 4px; padding: 0 .3rem; margin-left: .35rem; }
+  .done { text-align: center; padding: 2rem 1rem; }
+</style></head><body><main>
+<p id="count"></p><div class="bar"><div id="fill"></div></div>
+<div id="job"></div>
+<p style="color:#34444d;font-size:.9rem">Judge each posting as you would in a real search: would you apply? The app's
+scores are hidden on purpose. Open the posting when the preview is not enough. Every click is saved at once.</p>
+</main><script>
+const DECISIONS = [["apply", "Apply", "1"], ["maybe", "Maybe", "2"], ["skip", "Skip", "3"]];
+const LEVELS = [["fits", "Fits", "q"], ["too_senior", "Too senior", "w"], ["too_junior", "Too junior", "e"], ["unsure", "Can't tell", "r"]];
+let jobs = [], labels = {}, at = 0;
+const el = (id) => document.getElementById(id);
+const esc = (text) => String(text ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const complete = (label) => label && label.decision && label.level;
+async function save(id) {
+  await fetch("/labels", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, ...labels[id] }) });
+}
+function set(field, value) {
+  const id = jobs[at].id;
+  labels[id] = { ...(labels[id] || {}), [field]: value };
+  save(id);
+  if (complete(labels[id]) && field !== "note") setTimeout(() => { if (at < jobs.length - 1) { at += 1; } render(); }, 180);
+  render();
+}
+function render() {
+  const done = jobs.filter((job) => complete(labels[job.id])).length;
+  el("count").textContent = `${done} of ${jobs.length} labelled`;
+  el("fill").style.width = `${(100 * done) / Math.max(1, jobs.length)}%`;
+  if (done === jobs.length && at === jobs.length - 1 && complete(labels[jobs[at].id])) {
+    el("job").innerHTML = `<div class="card done"><h1>All ${jobs.length} labelled. Thank you.</h1><p>You can close this page.</p><button class="nav" onclick="at=0;render()">Review from the start</button></div>`;
+    return;
+  }
+  const job = jobs[at], label = labels[job.id] || {};
+  const pay = job.salary_min ? ` · ${Math.round(job.salary_min / 1000)}k${job.salary_max && job.salary_max !== job.salary_min ? "–" + Math.round(job.salary_max / 1000) + "k" : ""}` : "";
+  const group = (field, options) => options.map(([value, text, key]) =>
+    `<button class="${label[field] === value ? "on" : ""}" onclick="set('${field}','${value}')">${text}<kbd>${key}</kbd></button>`).join("");
+  el("job").innerHTML = `<div class="card">
+    <h1>${esc(job.title)}</h1><p class="meta">${esc(job.company)} · ${esc(job.location)}${pay} · posted ${esc(job.posted)}</p>
+    <p class="desc">${esc(job.description)}</p>
+    <p><a href="${esc(job.url)}" target="_blank" rel="noreferrer">Open the full posting</a></p>
+    <div class="row"><span>Would you apply?</span>${group("decision", DECISIONS)}</div>
+    <div class="row"><span>Level</span>${group("level", LEVELS)}</div>
+    <div class="row"><span>Note (optional)</span><input type="text" id="note" value="${esc(label.note)}" onchange="set('note', this.value)"></div>
+    <div class="row"><button class="nav" onclick="at=Math.max(0,at-1);render()">Back</button><span>${at + 1} / ${jobs.length}</span>
+      <button class="nav" onclick="at=Math.min(jobs.length-1,at+1);render()">Next</button></div></div>`;
+}
+document.addEventListener("keydown", (event) => {
+  if (event.target.tagName === "INPUT") return;
+  for (const [value, , key] of DECISIONS) if (event.key === key) set("decision", value);
+  for (const [value, , key] of LEVELS) if (event.key === key) set("level", value);
+  if (event.key === "ArrowLeft") { at = Math.max(0, at - 1); render(); }
+  if (event.key === "ArrowRight") { at = Math.min(jobs.length - 1, at + 1); render(); }
+});
+fetch("/data").then((response) => response.json()).then((data) => {
+  jobs = data.jobs; labels = data.labels;
+  const first = jobs.findIndex((job) => !complete(labels[job.id]));
+  at = first === -1 ? jobs.length - 1 : first;
+  render();
+});
+</script></body></html>

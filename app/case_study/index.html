@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="How GivemeaChance scores jobs and checks its documents, with the measurements that changed the design.">
+<title>GivemeaChance Case Study</title>
+<link rel="stylesheet" href="/case-study/case-study.css">
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Case study · Flask, SQLite, React, Gemini</p>
+<h1>GivemeaChance</h1>
+<p class="lede">A job-search assistant that says which postings are worth your time and why, then writes a résumé and cover letter that only use what is true about you.</p>
+<div class="links"><a href="/app/">Live demo</a><a href="https://github.com/beandecode/givemeachance">Source code</a></div>
+<figure><img src="/case-study/discover.png" alt="The swipe deck showing a Senior Platform Engineer posting with a score of 95 and its rated dimensions"><figcaption>The swipe deck. Each card shows the score, the rated dimensions, the strengths and gaps found, and the years the posting asks for.</figcaption></figure>
+</header>
+
+<section>
+<h2>The problem</h2>
+<p>Applying well means reading every posting, comparing it with your background and writing a résumé that fits it. Most tools do one of two things: send one résumé everywhere, or let a language model write whatever sounds good, including experience you do not have.</p>
+<p>I wanted a tool where the score can be explained, the documents can be checked, and I can show how well both work with numbers instead of claims.</p>
+</section>
+
+<section>
+<h2>Approach</h2>
+<p>The user reviews and approves a Master Profile built from their résumé. Every later step reads only that profile. For each posting the model rates five dimensions with evidence, and code computes the total, so the same ratings always give the same score. Postings are read in full, because a preview hides the years and skills that decide the fit.</p>
+<p>Résumés and letters are written only for jobs the user chooses. Afterwards a second pass checks every claim against the profile and marks it supported, inferred or unsupported, and the user sees the unsupported ones before exporting.</p>
+<figure><img src="/case-study/job-match.png" alt="A match report with a score, strengths, gaps and risk flags"><figcaption>A match report. Strengths and gaps point to lines in the posting and the profile.</figcaption></figure>
+</section>
+
+<section>
+<h2>How it was measured</h2>
+<p>I collected 48 real postings and labelled 47 of them by hand for an early-career data-science résumé, before looking at any score. Each got an apply, maybe or skip label and a level: fits, too senior, too junior or unsure.</p>
+<p>The level measure is the share of pairs, one role that fits and one that asks for more, where the seniority rating puts the fitting role higher. 0.50 is a coin flip. Intervals come from 2,000 bootstrap resamples with a fixed seed. One command, <code>python scripts/labelling.py report</code>, reproduces the matching figures on this page, given the labelled data, which stays private. The fact-check figures come from <code>scripts/factcheck_eval.py</code>.</p>
+<div class="rows" role="list">
+<div class="row" role="listitem"><b>Level: roles that fit ranked above roles that ask for more</b>
+<div class="track"><div class="fill w68"></div></div><span class="val">Before: 0.68 (preview, older model)</span>
+<div class="track"><div class="fill now w83"></div></div><span class="val">Now: 0.83 (95% interval 0.70 to 0.93)</span></div>
+<div class="row" role="listitem"><b>Jobs to apply to ranked above jobs to skip</b>
+<div class="track"><div class="fill w65"></div></div><span class="val">Before: 0.65</span>
+<div class="track"><div class="fill now w76"></div></div><span class="val">Now: 0.76 (0.56 to 0.92)</span></div>
+<div class="row" role="listitem"><b>Fitting roles that reach the swipe deck (score 70 or more)</b>
+<div class="track"><div class="fill w6"></div></div><span class="val">Before: 1 of 17</span>
+<div class="track"><div class="fill now w41"></div></div><span class="val">Now: 7 of 17</span></div>
+</div>
+</section>
+
+<section>
+<h2>What the measurements changed</h2>
+<div class="two">
+<div><span class="big">1 → 7</span><p>Fitting roles in the deck. A cap tied the score to "3+ years" or a missing skill and hid good matches. Now only a hard gate, such as a required licence, caps a score.</p></div>
+<div><span class="big">0.68 → 0.83</span><p>Level agreement after scoring the full posting instead of a preview, with the prompt and profile fixes made along the way (the first run used the preview and an older model). Postings that state the years asked went from 1 of 48 to 39 of 48.</p></div>
+</div>
+<p>The measurements also exposed a bug: profile bullets were being cut at commas. That is fixed, and a bullet now stays whole.</p>
+<p>The years a posting asks for are now shown next to the score, read from the text by plain code with no model call. The score is unchanged, because the person applying decides whether to apply above their level.</p>
+<figure><img src="/case-study/profile-gaps.png" alt="The profile page asking the user to fill the gaps it found"><figcaption>The profile step lists the gaps it found and asks the user to fill them instead of guessing.</figcaption></figure>
+</section>
+
+<section>
+<h2>Does the fact check work?</h2>
+<p>I planted wrong claims in generated documents for a fictional profile and counted how many the audit caught. The blunt set had 20 documents with 31 planted claims: invented employers, numbers, degrees and certifications. The subtle set had 12 documents with 21 claims, such as an inflated title or a team that was never led.</p>
+<div class="scroll"><table>
+<thead><tr><th>Set</th><th>gemini-3.5-flash-lite (used)</th><th>gemini-3.8-flash</th></tr></thead>
+<tbody>
+<tr><td>Blunt: planted claims caught</td><td>31 of 31</td><td>31 of 31</td></tr>
+<tr><td>Subtle: planted claims caught</td><td>19 of 21</td><td>21 of 21</td></tr>
+<tr><td>True claims wrongly flagged</td><td>0</td><td>0</td></tr>
+<tr><td>Median seconds per audit</td><td>1.7</td><td>about 11</td></tr>
+</tbody></table></div>
+<p>The cheaper model missed an inflated "Leads a team" and a "Lead engineer" title. I kept it because it is six times faster and the public demo has to answer quickly. The numbers are in the project's decision records for anyone who would choose differently.</p>
+</section>
+
+<section>
+<h2>Choosing a model</h2>
+<p>Four models scored the same postings with the same prompt. The intervals overlap, so the choice rests on speed and cost.</p>
+<div class="scroll"><table>
+<thead><tr><th>Model</th><th>Level</th><th>Apply above skip</th><th>Fitting roles in deck</th><th>Seconds</th><th>$ per 100</th></tr></thead>
+<tbody>
+<tr><td>2.5-flash-lite</td><td>0.74</td><td>0.60</td><td>14 of 17, plus 4 skips</td><td>2.4</td><td>0.06</td></tr>
+<tr class="used"><td>3.5-flash-lite (used)</td><td>0.83</td><td>0.76</td><td>7 of 17</td><td>1.9</td><td>0.24</td></tr>
+<tr><td>3.8-flash</td><td>0.81</td><td>0.88</td><td>4 of 16</td><td>10.6</td><td>0.72</td></tr>
+<tr><td>4-hydrogen</td><td>0.79</td><td>0.80</td><td>2 of 17</td><td>14.4</td><td>2.46</td></tr>
+</tbody></table></div>
+<p class="note">The cheapest model puts four jobs I would skip into the deck, so its low price is not a bargain. The larger models were not measurably more accurate here, since the intervals overlap, and are 5 to 8 times slower.</p>
+</section>
+
+<section>
+<h2>Limits</h2>
+<p>This is 47 postings, one labeller and one early-career résumé, so the intervals are wide. Only 7 postings are labelled skip, which is why the apply-versus-skip interval runs from 0.56 to 0.92. The score describes fit and does not predict who gets hired. The numbers show the changes helped on this set. They do not show how it will do on every résumé.</p>
+<p>The rest of the engineering is described in the repository: more than 460 Python tests, 150 web tests and 55 browser tests on mock providers, accessibility checks on every screen, a demo with a read-only sample workspace and live guest workspaces held to a daily AI budget, and monitoring that sends a notification when the demo is down or near its limit.</p>
+<div class="links"><a href="/app/">Try the live demo</a><a href="https://github.com/beandecode/givemeachance">Read the code</a></div>
+</section>
+</main>
+
+</body>
+</html>

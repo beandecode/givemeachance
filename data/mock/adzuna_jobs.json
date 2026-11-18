@@ -1,0 +1,26 @@
+[
+  {
+    "id": "adzuna_1001",
+    "title": "Backend Python Engineer",
+    "company": "NorthStack Labs",
+    "location": "Toronto, ON",
+    "salary_min": 105000,
+    "salary_max": 130000,
+    "description": "Build and maintain Python backend services with Flask, SQL, Docker, and AWS.",
+    "posted_date": "2026-03-19",
+    "source": "adzuna",
+    "url": "https://example.com/jobs/adzuna_1001"
+  },
+  {
+    "id": "adzuna_1002",
+    "title": "Full Stack Developer",
+    "company": "PixelForge",
+    "location": "Toronto, ON",
+    "salary_min": 90000,
+    "salary_max": 120000,
+    "description": "Develop full-stack features using TypeScript, React, Node.js, and PostgreSQL.",
+    "posted_date": "2026-03-20",
+    "source": "adzuna",
+    "url": "https://example.com/jobs/adzuna_1002"
+  }
+]

@@ -1,0 +1,52 @@
+[project]
+name = "givemeachance"
+version = "0.1.0"
+description = "Job-search assistant: reviewed Master Profile, explainable matching, tailored resume/cover letter, application tracking"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["output", "output_localtest", "logs", "logs_localtest"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# Scripts and the test bootstrap put the project root on sys.path before importing it.
+"scripts/*.py" = ["E402"]
+"tests/conftest.py" = ["E402"]
+# Prompt text; restructured in roadmap Phase 1d.
+"core/llm_prompts.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["app", "core", "adapters", "scripts"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+# Modules with known type errors (mostly unchecked `fetchone()` results). Remove a module
+# from this list when it is refactored; new modules must type-check. See docs/roadmap.md.
+[[tool.mypy.overrides]]
+module = [
+    "adapters.llm.gemini_api",
+    "adapters.llm.mock_gemini",
+    "core.evaluate",
+    "core.generate_cl",
+    "core.generate_resume",
+    "core.profile_input_service",
+    "core.profile_quality",
+    "core.profile_readiness",
+    "core.profile_synthesis",
+    "core.request_normalization",
+    "core.task_handlers",
+]
+ignore_errors = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["app", "core", "adapters"]

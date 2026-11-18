@@ -1,0 +1,31 @@
+# Live public demo (DEMO_MODE=true and DEMO_LIVE=true): visitors read the seeded sample workspace and can start a
+# guest workspace that uses the real providers inside these daily limits (ADR-018). The sample workspace itself is
+# seeded with config/settings.demo.yaml (mock providers) into the same database before the server starts.
+app:
+  name: GivemeaChance (Live demo)
+  db_path: output_demo/demo.db
+  log_path: logs_demo/pipeline.log
+
+pipeline:
+  daily_limit: 5          # new jobs per search, so one search scores at most five jobs
+  max_description_length: 10000
+
+data_sources:
+  primary: adzuna_api
+  secondary: none
+
+mock_data:
+  adzuna_file: data/mock/demo_jobs.json
+  jooble_file: data/mock/jooble_jobs.json
+
+llm:
+  provider: gemini_api
+  model: gemini-3.5-flash-lite
+  prompt_version: v3
+  fullstack_enabled: true
+
+api_limits:
+  gemini_daily_limit: 25           # per guest
+  adzuna_daily_limit: 3            # per guest
+  gemini_global_daily_limit: 100   # whole demo, per day
+  adzuna_global_daily_limit: 30    # whole demo, per day

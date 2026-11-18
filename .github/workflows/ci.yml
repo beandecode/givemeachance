@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, types, tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: "0" # test browser inside web/node_modules, as locally (mise.toml)
+    steps:
+      - uses: actions/checkout@v7
+      - name: Toolchain from mise.toml (Python + Node)
+        uses: jdx/mise-action@v5
+        env:
+          MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
+      - name: Install dependencies (hash-locked)
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --require-hashes -r requirements-dev.txt
+          npm ci --prefix web --no-audit
+          cd web && npx playwright install --with-deps --only-shell chromium
+      - name: Verify (ruff, mypy, pytest + coverage, route inventory, JS, web app, browser e2e)
+        env:
+          PYTEST_ADDOPTS: --cov --cov-report=term-missing:skip-covered
+          CI: "true"
+        run: bash scripts/verify.sh
+      - name: Keep the browser-test report when something fails
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: web/playwright-report
+          if-no-files-found: ignore
+          retention-days: 7
+
+  docker:
+    name: Docker build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build image
+        run: docker build --tag givemeachance:ci .
+      - name: Smoke-test imports
+        run: |
+          docker run --rm givemeachance:ci python -c "import app, core, adapters"
+          docker run --rm givemeachance:ci test -f app/spa_dist/index.html
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: gitleaks (full history)
+        run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1 git /repo --redact --no-banner --exit-code 1

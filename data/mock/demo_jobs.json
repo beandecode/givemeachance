@@ -1,0 +1,98 @@
+[
+  {
+    "id": "adzuna_demo_001",
+    "title": "Backend Python Engineer",
+    "company": "NorthStack Labs",
+    "location": "Toronto, ON",
+    "salary_min": 105000,
+    "salary_max": 130000,
+    "description": "Build and maintain Python backend services with Flask, SQL, Docker and AWS. You will own APIs used by thousands of customers, improve ETL reliability and mentor junior developers. You have 3+ years of experience building Python web services.",
+    "posted_date": "2026-03-19",
+    "source": "adzuna",
+    "url": "https://example.com/jobs/demo_001"
+  },
+  {
+    "id": "adzuna_demo_002",
+    "title": "Full Stack Developer",
+    "company": "PixelForge",
+    "location": "Remote, Canada",
+    "salary_min": 90000,
+    "salary_max": 120000,
+    "description": "Develop full-stack features using TypeScript, React, Node.js and PostgreSQL. Work closely with design, ship weekly and keep GitHub Actions pipelines green.",
+    "posted_date": "2026-03-20",
+    "source": "adzuna",
+    "url": "https://example.com/jobs/demo_002"
+  },
+  {
+    "id": "adzuna_demo_003",
+    "title": "Senior Platform Engineer",
+    "company": "Cobalt Cloud",
+    "location": "Ottawa, ON",
+    "salary_min": 130000,
+    "salary_max": 160000,
+    "description": "Run our AWS platform: Docker images, GitHub Actions deployments, Python tooling and PostgreSQL operations. Reduce cloud cost and improve alerting. 5+ years of experience running cloud infrastructure in production.",
+    "posted_date": "2026-03-21",
+    "source": "adzuna",
+    "url": "https://example.com/jobs/demo_003"
+  },
+  {
+    "id": "adzuna_demo_004",
+    "title": "Data Engineer",
+    "company": "Lakeview Analytics",
+    "location": "Ottawa, ON",
+    "salary_min": 100000,
+    "salary_max": 125000,
+    "description": "Design Python and SQL pipelines on PostgreSQL and AWS. Build reliable ETL jobs with retries, tests and monitoring for the analytics team. 2+ years of professional experience with data pipelines.",
+    "posted_date": "2026-03-18",
+    "source": "adzuna",
+    "url": "https://example.com/jobs/demo_004"
+  },
+  {
+    "id": "adzuna_demo_005",
+    "title": "API Developer (FastAPI)",
+    "company": "Meridian Health",
+    "location": "Montreal, QC",
+    "salary_min": 95000,
+    "salary_max": 115000,
+    "description": "Own FastAPI services in Python, backed by PostgreSQL and Docker. Add test coverage for critical modules and integrate partner systems.",
+    "posted_date": "2026-03-22",
+    "source": "adzuna",
+    "url": "https://example.com/jobs/demo_005"
+  },
+  {
+    "id": "adzuna_demo_006",
+    "title": "Frontend Engineer",
+    "company": "Brightside Studio",
+    "location": "Toronto, ON",
+    "salary_min": 85000,
+    "salary_max": 105000,
+    "description": "Build accessible React and TypeScript interfaces for a consumer product. Collaborate with designers and write component tests.",
+    "posted_date": "2026-03-17",
+    "source": "adzuna",
+    "url": "https://example.com/jobs/demo_006"
+  },
+  {
+    "id": "adzuna_demo_007",
+    "title": "Site Reliability Engineer",
+    "company": "Harbourline",
+    "location": "Vancouver, BC",
+    "salary_min": 120000,
+    "salary_max": 145000,
+    "description": "Keep production healthy with Go services, Docker, AWS and on-call rotations. Strong Kubernetes and Terraform experience required. 4 to 6 years of experience in operations or SRE.",
+    "posted_date": "2026-03-16",
+    "source": "adzuna",
+    "url": "https://example.com/jobs/demo_007"
+  },
+  {
+    "id": "adzuna_demo_008",
+    "title": "Junior Software Developer",
+    "company": "Maple Works",
+    "location": "Kitchener, ON",
+    "salary_min": 65000,
+    "salary_max": 80000,
+    "description": "Entry-level role on a small team writing Python and JavaScript for internal tools. Training provided; some SQL helpful.",
+    "posted_date": "2026-03-15",
+    "source": "adzuna",
+    "url": "https://example.com/jobs/demo_008"
+  }
+]

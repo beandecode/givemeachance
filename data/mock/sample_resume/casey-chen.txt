@@ -1,0 +1,33 @@
+Casey Chen
+Backend Engineer | Toronto, ON | casey.chen@example.com | github.com/example
+
+SUMMARY
+Backend engineer with five years of experience building Python services and data pipelines on AWS.
+
+EXPERIENCE
+Backend Engineer, TrueNorth Analytics, Toronto (May 2022 - present)
+- Own the reporting API (FastAPI, PostgreSQL) used by 300+ business customers, including design reviews and on-call
+- Led the move from Flask to FastAPI with async database access, cutting p95 latency from 820 ms to 190 ms
+- Rebuilt nightly ETL jobs in Airflow with retries, idempotent loads and alerting; on-time delivery rose from 91% to 99.6%
+- Mentor two junior developers
+
+Software Developer, HarborStack, Toronto (Jan 2020 - Apr 2022)
+- Built REST integrations with payment and shipping providers (Flask, PostgreSQL, Redis)
+- Raised test coverage of the order service from 41% to 85% and added CI checks in GitHub Actions
+- Built internal admin screens in React and TypeScript for the support team
+
+Software Developer (co-op), MapleCloud, Waterloo
+- Wrote Python tools that automated log collection for the support team
+
+PROJECTS
+Open-source job queue for Postgres - a Python library that runs background jobs on PostgreSQL row locks
+Transit delay dashboard - collects public transit data every minute and shows delays by route
+
+EDUCATION
+BSc Computer Science, University of Waterloo (2015 - 2019)
+
+CERTIFICATIONS
+AWS Certified Developer - Associate (2023)
+
+SKILLS
+Python, SQL, FastAPI, Flask, PostgreSQL, AWS, Docker, Airflow, Terraform, Redis, TypeScript, React

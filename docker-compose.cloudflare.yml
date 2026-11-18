@@ -1,0 +1,16 @@
+services:
+  app:
+    ports: !reset []
+    expose:
+      - "5001"
+
+  cloudflared:
+    # Pinned: `latest` never refreshes a pulled image. 2026.10.2+ drops the compromised eMudhra (emSign)
+    # intermediates (Cloudflare notice, 2026-10-20). Bump deliberately, then pull + recreate this service only.
+    image: cloudflare/cloudflared:2026.10.3
+    container_name: openclaw-cloudflared
+    depends_on:
+      app:
+        condition: service_healthy
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}

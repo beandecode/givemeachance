@@ -1,0 +1,26 @@
+[
+  {
+    "id": "jooble_2001",
+    "title": "Python Developer",
+    "company": "DataNest",
+    "location": "Toronto, ON",
+    "salary_min": 85000,
+    "salary_max": 110000,
+    "description": "Implement APIs, ETL jobs, and SQL queries. Experience with Docker is preferred.",
+    "posted_date": "2026-03-20",
+    "source": "jooble",
+    "url": "https://example.com/jobs/jooble_2001"
+  },
+  {
+    "id": "adzuna_1002",
+    "title": "Full Stack Developer",
+    "company": "PixelForge",
+    "location": "Toronto, ON",
+    "salary_min": 92000,
+    "salary_max": 122000,
+    "description": "Develop full-stack features using TypeScript, React, Node.js, and PostgreSQL.",
+    "posted_date": "2026-03-20",
+    "source": "jooble",
+    "url": "https://example.com/jobs/jooble_duplicate_of_1002"
+  }
+]

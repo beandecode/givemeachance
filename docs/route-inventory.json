@@ -1,0 +1,326 @@
+[
+  {
+    "method": "GET",
+    "path": "/",
+    "endpoint": "home",
+    "module": "app/route_groups/spa.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/account",
+    "endpoint": "api_create_account",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/applications",
+    "endpoint": "api_list_applications",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/config",
+    "endpoint": "api_config",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/demo/guest",
+    "endpoint": "api_start_guest",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/demo/sample-resumes/<kind>",
+    "endpoint": "api_sample_resume",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/documents/<kind>/<int:document_id>",
+    "endpoint": "api_get_document",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/documents/<kind>/<int:document_id>",
+    "endpoint": "api_edit_document",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/documents/<kind>/<int:document_id>/export",
+    "endpoint": "api_export_document",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/evaluations/rerun",
+    "endpoint": "api_rerun_evaluations",
+    "module": "app/route_groups/api_jobs.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/jobs",
+    "endpoint": "workspace_jobs",
+    "module": "app/route_groups/api_jobs.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/jobs/<int:job_id>",
+    "endpoint": "api_job_detail",
+    "module": "app/route_groups/api_jobs.py"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/jobs/<int:job_id>/application",
+    "endpoint": "api_update_application",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/jobs/<int:job_id>/archive",
+    "endpoint": "api_unarchive_job",
+    "module": "app/route_groups/api_jobs.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/jobs/<int:job_id>/archive",
+    "endpoint": "api_archive_job",
+    "module": "app/route_groups/api_jobs.py"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/jobs/<int:job_id>/description",
+    "endpoint": "api_set_job_description",
+    "module": "app/route_groups/api_jobs.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/jobs/<int:job_id>/documents",
+    "endpoint": "api_list_documents",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/jobs/<int:job_id>/documents",
+    "endpoint": "api_generate_document",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/jobs/<int:job_id>/triage",
+    "endpoint": "api_undo_triage",
+    "module": "app/route_groups/api_jobs.py"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/jobs/<int:job_id>/triage",
+    "endpoint": "api_triage_job",
+    "module": "app/route_groups/api_jobs.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/jobs/manual",
+    "endpoint": "api_add_manual_job",
+    "module": "app/route_groups/api_jobs.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/journey",
+    "endpoint": "api_get_journey",
+    "module": "app/route_groups/workspace.py"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/journey",
+    "endpoint": "api_update_journey",
+    "module": "app/route_groups/workspace.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/openapi.json",
+    "endpoint": "openapi_document",
+    "module": "app/route_groups/system.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/overview",
+    "endpoint": "workspace_overview",
+    "module": "app/route_groups/workspace.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/preferences",
+    "endpoint": "api_get_preferences",
+    "module": "app/route_groups/workspace.py"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/preferences",
+    "endpoint": "api_save_preferences",
+    "module": "app/route_groups/workspace.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/profile",
+    "endpoint": "workspace_profile",
+    "module": "app/route_groups/workspace.py"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/profile",
+    "endpoint": "api_edit_profile",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/profile/<int:profile_id>/review",
+    "endpoint": "api_review_profile",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/profile/supplement",
+    "endpoint": "api_supplement_profile",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/profile/synthesize",
+    "endpoint": "api_synthesize_profile",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/profile/versions",
+    "endpoint": "api_profile_versions",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/search-preferences",
+    "endpoint": "workspace_search_preferences",
+    "module": "app/route_groups/workspace.py"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/v1/search-preferences",
+    "endpoint": "workspace_save_search_preferences",
+    "module": "app/route_groups/workspace.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/search-preferences/suggested",
+    "endpoint": "api_suggested_search_preferences",
+    "module": "app/route_groups/workspace.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/search-suggestions",
+    "endpoint": "api_search_suggestions",
+    "module": "app/route_groups/workspace.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/searches",
+    "endpoint": "api_start_search",
+    "module": "app/route_groups/api_jobs.py"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/session",
+    "endpoint": "api_delete_session",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/session",
+    "endpoint": "api_get_session",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/session",
+    "endpoint": "api_create_session",
+    "module": "app/route_groups/api_profile.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/tasks",
+    "endpoint": "workspace_tasks",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/tasks/<task_id>",
+    "endpoint": "api_get_task",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/tasks/<task_id>/cancel",
+    "endpoint": "api_cancel_task",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "GET",
+    "path": "/api/v1/tasks/<task_id>/result",
+    "endpoint": "api_task_result",
+    "module": "app/route_groups/api_documents.py"
+  },
+  {
+    "method": "GET",
+    "path": "/app",
+    "endpoint": "spa",
+    "module": "app/route_groups/spa.py"
+  },
+  {
+    "method": "GET",
+    "path": "/app/",
+    "endpoint": "spa",
+    "module": "app/route_groups/spa.py"
+  },
+  {
+    "method": "GET",
+    "path": "/app/<path:path>",
+    "endpoint": "spa",
+    "module": "app/route_groups/spa.py"
+  },
+  {
+    "method": "GET",
+    "path": "/case-study",
+    "endpoint": "case_study",
+    "module": "app/route_groups/spa.py"
+  },
+  {
+    "method": "GET",
+    "path": "/case-study/",
+    "endpoint": "case_study",
+    "module": "app/route_groups/spa.py"
+  },
+  {
+    "method": "GET",
+    "path": "/case-study/<path:path>",
+    "endpoint": "case_study",
+    "module": "app/route_groups/spa.py"
+  },
+  {
+    "method": "GET",
+    "path": "/health",
+    "endpoint": "health",
+    "module": "app/route_groups/system.py"
+  },
+  {
+    "method": "GET",
+    "path": "/healthz",
+    "endpoint": "health",
+    "module": "app/route_groups/system.py"
+  },
+  {
+    "method": "GET",
+    "path": "/readyz",
+    "endpoint": "readyz",
+    "module": "app/route_groups/system.py"
+  }
+]

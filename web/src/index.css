@@ -1,0 +1,510 @@
+@import "tailwindcss";
+
+/* Neon Glass (ADR-012). Self-hosted, Latin subset, SIL OFL 1.1 (licences next to the files). `swap` shows the
+   fallback first; the fallbacks are size-matched so the swap barely moves the layout. */
+@font-face {
+  font-family: "Manrope";
+  src: url("./assets/fonts/Manrope-Variable.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("./assets/fonts/ChakraPetch-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Chakra Petch";
+  src: url("./assets/fonts/ChakraPetch-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./assets/fonts/JetBrainsMono-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Manrope Fallback";
+  src: local("Arial");
+  size-adjust: 104%;
+  ascent-override: 96%;
+  descent-override: 26%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Chakra Petch Fallback";
+  src: local("Arial");
+  size-adjust: 100%;
+  ascent-override: 98%;
+  descent-override: 28%;
+  line-gap-override: 0%;
+}
+
+/* Design tokens. Utilities read them as variables, so dark mode only swaps the values below.
+   Names stay semantic (canvas, surface, ink, brand, accent ...); `brand` is signal yellow and is only ever a fill. */
+@theme {
+  --font-sans:
+    "Manrope", "Manrope Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-display:
+    "Chakra Petch", "Chakra Petch Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial,
+    sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Type scale. Chakra Petch (display) for titles, scores, labels and stamps; Manrope for text. */
+  --text-hero: 3.5rem;
+  --text-hero--line-height: 1.04;
+  --text-title: 1.875rem;
+  --text-title--line-height: 1.1;
+  --text-figure: 3.25rem;
+  --text-figure--line-height: 1;
+  --text-heading: 1.25rem;
+  --text-heading--line-height: 1.3;
+  --text-subheading: 1.0625rem;
+  --text-subheading--line-height: 1.4;
+  --text-secondary: 0.9375rem;
+  --text-secondary--line-height: 1.5;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.4;
+
+  --radius-control: 0.875rem;
+  --radius-card: 1.375rem;
+  --radius-sheet: 1.75rem;
+
+  --ease-calm: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration-quick: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 240ms;
+
+  --color-canvas: #c6d2d8;
+  --color-surface: #edf2f4;
+  --color-subtle: #e2e9ed;
+  --color-ink: #0f1b21;
+  --color-muted: #34444d;
+  --color-faint: #3f5058;
+  --color-line: #a5b5bd;
+  --color-line-strong: #8499a3;
+
+  --color-brand: #f5dc1f;
+  --color-on-brand: #0f1b21;
+  --color-accent: #075a62;
+  --color-accent-strong: #04464d;
+  --color-accent-soft: #d3e6e8;
+  --color-on-accent: #ffffff;
+
+  --color-good: #1e6b4a;
+  --color-good-soft: #d5eadd;
+  --color-warn: #7a5200;
+  --color-warn-soft: #f3e6c4;
+  --color-bad: #9a3626;
+  --color-bad-soft: #f1d9d4;
+
+  /* Only floating layers cast a shadow. */
+  --shadow-pop: 0 14px 34px rgb(24 48 60 / 0.22);
+}
+
+/* Light is the default; the glass level is "Strong" here and "Medium" in dark (ADR-012 "auto"). The user can pin a
+   level with <html data-gi="subtle|medium|medium_plus|strong">. */
+:root {
+  --glass-rgb: 240 246 248;
+  --glass-edge: 255 255 255;
+  --glass-line: rgb(255 255 255 / 0.7);
+  --glow-rgb: 255 255 255;
+  --hud: #0f1b21;
+  --yellow-glow: 0 0 0 transparent;
+  --grid: rgb(15 27 33 / 0.075);
+  --light-teal: rgb(11 110 119 / 0.3);
+  --light-yellow: rgb(245 220 31 / 0.5);
+  /* Strong */
+  --glass-a: 0.4;
+  --glass-blur: 34px;
+  --glass-sat: 200%;
+  --glass-rim: 1;
+  --glass-in: 0.45;
+  --glass-sheen: 0.75;
+  --glass-plate-a: 0.84;
+  --cut: 18px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas: #071116;
+    --color-surface: #0e1d24;
+    --color-subtle: #13262e;
+    --color-ink: #e8f1f2;
+    --color-muted: #93a7b0;
+    --color-faint: #8195a0;
+    --color-line: #1f3540;
+    --color-line-strong: #2e4955;
+
+    --color-brand: #f7e14b;
+    --color-on-brand: #0b1114;
+    --color-accent: #4fc1cb;
+    --color-accent-strong: #8fe0e7;
+    --color-accent-soft: #0f2e33;
+    --color-on-accent: #04181b;
+
+    --color-good: #6fd0a0;
+    --color-good-soft: #123022;
+    --color-warn: #f0c062;
+    --color-warn-soft: #33270d;
+    --color-bad: #ff8f80;
+    --color-bad-soft: #3a1714;
+
+    --shadow-pop: 0 18px 40px rgb(0 0 0 / 0.6);
+
+    --glass-rgb: 12 28 35;
+    --glass-edge: 247 225 75;
+    --glass-line: rgb(247 225 75 / 0.22);
+    --glow-rgb: 79 193 203;
+    --hud: #f7e14b;
+    --yellow-glow: 0 0 18px rgb(247 225 75 / 0.45);
+    --grid: rgb(79 193 203 / 0.1);
+    --light-teal: rgb(14 124 134 / 0.45);
+    --light-yellow: rgb(247 225 75 / 0.2);
+    /* Medium */
+    --glass-a: 0.64;
+    --glass-blur: 16px;
+    --glass-sat: 150%;
+    --glass-rim: 0.32;
+    --glass-in: 0.22;
+    --glass-sheen: 0.4;
+    --glass-plate-a: 0.88;
+    color-scheme: dark;
+  }
+}
+
+html[data-gi="subtle"] {
+  --glass-a: 0.8;
+  --glass-blur: 8px;
+  --glass-sat: 125%;
+  --glass-in: 0.1;
+  --glass-sheen: 0.22;
+  --glass-plate-a: 0.9;
+}
+html[data-gi="medium"] {
+  --glass-a: 0.64;
+  --glass-blur: 16px;
+  --glass-sat: 150%;
+  --glass-in: 0.22;
+  --glass-sheen: 0.4;
+  --glass-plate-a: 0.88;
+}
+html[data-gi="medium_plus"] {
+  --glass-a: 0.54;
+  --glass-blur: 24px;
+  --glass-sat: 175%;
+  --glass-in: 0.32;
+  --glass-sheen: 0.55;
+  --glass-plate-a: 0.86;
+}
+html[data-gi="strong"] {
+  --glass-a: 0.4;
+  --glass-blur: 34px;
+  --glass-sat: 200%;
+  --glass-in: 0.45;
+  --glass-sheen: 0.75;
+  --glass-plate-a: 0.84;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+    font-variant-numeric: tabular-nums;
+  }
+  /* The scene behind the glass: a faint grid with teal and yellow light, fixed to the window. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+      radial-gradient(50% 40% at 92% 4%, var(--light-yellow), transparent 70%),
+      radial-gradient(50% 50% at 0% 40%, var(--light-teal), transparent 70%);
+    background-size:
+      28px 28px,
+      28px 28px,
+      100% 100%,
+      100% 100%;
+  }
+  .font-display {
+    font-weight: 700;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+  dialog[open] {
+    animation: sheet-in var(--duration-slow) var(--ease-calm);
+  }
+  dialog::backdrop {
+    background: rgb(4 12 16 / 0.55);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      transition-duration: 1ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Liquid glass. `.glass` is a framing surface (translucent, blurred, bright rim on the top and left edges, inner
+   glow, diagonal sheen); `.glass-plate` is the denser layer small text sits on; `.glass-ctl` is a lighter version for
+   buttons and chips. Without transparency (reduced-transparency or no backdrop-filter) they become solid. */
+@layer components {
+  .glass {
+    position: relative;
+    isolation: isolate;
+    background-color: rgb(var(--glass-rgb) / var(--glass-a));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    border: 1px solid var(--glass-line);
+    box-shadow:
+      inset 1.5px 1.5px 0 rgb(255 255 255 / calc(0.85 * var(--glass-rim))),
+      inset 0 0 28px rgb(var(--glow-rgb) / calc(var(--glass-in) * 0.5));
+  }
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      rgb(255 255 255 / calc(var(--glass-sheen) * 0.32)),
+      transparent 38%,
+      transparent 70%,
+      rgb(var(--glass-edge) / calc(var(--glass-sheen) * 0.12))
+    );
+  }
+  .glass-plate {
+    background-color: rgb(var(--glass-rgb) / var(--glass-plate-a));
+  }
+  .glass-ctl {
+    background-color: rgb(var(--glass-rgb) / calc(var(--glass-a) + 0.2));
+    backdrop-filter: blur(calc(var(--glass-blur) * 0.5)) saturate(var(--glass-sat));
+    border: 1px solid var(--glass-line);
+    box-shadow: inset 1px 1px 0 rgb(255 255 255 / calc(0.7 * var(--glass-rim)));
+  }
+  /* HUD details: corner brackets and an optional cut corner. */
+  .hud::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    pointer-events: none;
+    opacity: 0.85;
+    background:
+      linear-gradient(var(--hud), var(--hud)) top left / 14px 2px no-repeat,
+      linear-gradient(var(--hud), var(--hud)) top left / 2px 14px no-repeat,
+      linear-gradient(var(--hud), var(--hud)) bottom right / 14px 2px no-repeat,
+      linear-gradient(var(--hud), var(--hud)) bottom right / 2px 14px no-repeat;
+  }
+  .cut-tr {
+    clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+  }
+  .glow-yellow {
+    box-shadow: var(--yellow-glow);
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .glass,
+    .glass-ctl {
+      background-color: var(--color-surface);
+      backdrop-filter: none;
+    }
+    .glass-plate {
+      background-color: var(--color-subtle);
+    }
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass,
+    .glass-ctl {
+      background-color: var(--color-surface);
+    }
+    .glass-plate {
+      background-color: var(--color-subtle);
+    }
+  }
+}
+
+/* Rendered Markdown for résumé / cover-letter previews (mirrors the export layout). */
+@layer components {
+  .doc-preview {
+    @apply text-[0.94rem] leading-relaxed text-ink;
+  }
+  .doc-preview h1 {
+    @apply text-2xl font-semibold tracking-tight mb-1;
+  }
+  .doc-preview h2 {
+    @apply mt-6 mb-2 border-b border-line pb-1 text-base font-semibold;
+  }
+  .doc-preview h3 {
+    @apply mt-4 mb-1 font-semibold;
+  }
+  .doc-preview p {
+    @apply my-2;
+  }
+  .doc-preview ul {
+    @apply my-2 list-disc pl-5;
+  }
+  .doc-preview ol {
+    @apply my-2 list-decimal pl-5;
+  }
+  .doc-preview li {
+    @apply my-0.5;
+  }
+  .doc-preview a {
+    @apply text-accent underline underline-offset-2;
+  }
+  .doc-preview hr {
+    @apply my-4 border-line;
+  }
+  .doc-preview code {
+    @apply rounded bg-subtle px-1 font-mono text-[0.85em];
+  }
+}
+
+/* Tab switch motion: the new page rises in (a move only, no fade: text keeps its full contrast while it settles) and the active tab icon pops. Both are off for reduced motion. The route
+   animation never ends in a transform (fill-mode backwards), so fixed children keep their place afterwards. */
+@keyframes route-enter {
+  from {
+    transform: translateY(8px);
+  }
+}
+@keyframes tab-pop {
+  0% {
+    transform: scale(0.85);
+  }
+  55% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.route-enter {
+  animation: route-enter var(--duration-slow) var(--ease-calm) backwards;
+}
+.tab-pop {
+  animation: tab-pop 260ms var(--ease-calm);
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-enter,
+  .tab-pop {
+    animation: none;
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* First-visit tour (features/tour): a full-window modal whose spotlight is a box with a huge shadow, so moving and
+   resizing it animates the dark area around it. The card content rises in at each stop. */
+dialog.tour {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: transparent;
+  animation: none;
+}
+dialog.tour::backdrop {
+  background: transparent;
+}
+.tour-spot {
+  position: fixed;
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 0 0 2px var(--color-brand),
+    0 0 0 200vmax rgb(4 12 16 / 0.68);
+  pointer-events: none;
+  transition:
+    top 420ms var(--ease-calm),
+    left 420ms var(--ease-calm),
+    width 420ms var(--ease-calm),
+    height 420ms var(--ease-calm);
+}
+.tour-spot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid var(--color-brand);
+  animation: tour-pulse 1.8s ease-out infinite;
+}
+.tour-spot-off {
+  box-shadow: 0 0 0 200vmax rgb(4 12 16 / 0.68);
+}
+.tour-spot-off::after {
+  display: none;
+}
+.tour-card {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: min(23rem, calc(100vw - 1rem));
+  transition:
+    top 420ms var(--ease-calm),
+    left 420ms var(--ease-calm);
+}
+.tour-in {
+  animation: tour-in 320ms var(--ease-calm) backwards;
+}
+.tour-stagger > * {
+  animation: tour-in 420ms var(--ease-calm) backwards;
+}
+.tour-stagger > :nth-child(1) {
+  animation-delay: 160ms;
+}
+.tour-stagger > :nth-child(2) {
+  animation-delay: 300ms;
+}
+.tour-stagger > :nth-child(3) {
+  animation-delay: 440ms;
+}
+@keyframes tour-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes tour-pulse {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-spot::after {
+    display: none;
+  }
+}

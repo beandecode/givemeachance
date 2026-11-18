@@ -1,0 +1,28 @@
+app:
+  name: GivemeaChance
+  db_path: output/job_assistant.db
+  log_path: logs/pipeline.log
+
+pipeline:
+  daily_limit: 20
+  max_description_length: 10000
+
+data_sources:
+  primary: adzuna_api
+  secondary: none
+
+mock_data:
+  adzuna_file: data/mock/adzuna_jobs.json
+  jooble_file: data/mock/jooble_jobs.json
+
+llm:
+  provider: gemini_api
+  model: gemini-3.5-flash-lite
+  prompt_version: v3
+  fullstack_enabled: true
+
+api_limits:
+  gemini_daily_limit: 50
+  adzuna_daily_limit: 5
+  gemini_global_daily_limit: 120
+  adzuna_global_daily_limit: 30

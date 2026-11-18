@@ -1,0 +1,29 @@
+# Read-only public demo (DEMO_MODE=true): mock providers, zero quota, sample data. No keys needed.
+app:
+  name: GivemeaChance (Demo)
+  db_path: output_demo/demo.db
+  log_path: logs_demo/pipeline.log
+
+pipeline:
+  daily_limit: 10
+  max_description_length: 10000
+
+data_sources:
+  primary: mock_adzuna
+  secondary: none
+
+mock_data:
+  adzuna_file: data/mock/demo_jobs.json
+  jooble_file: data/mock/jooble_jobs.json
+
+llm:
+  provider: mock_gemini
+  model: gemini-3.5-flash-lite
+  prompt_version: v3
+  fullstack_enabled: true
+
+api_limits:
+  gemini_daily_limit: 0
+  adzuna_daily_limit: 0
+  gemini_global_daily_limit: 0
+  adzuna_global_daily_limit: 0

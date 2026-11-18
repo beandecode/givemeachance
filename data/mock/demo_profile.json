@@ -1,0 +1,232 @@
+{
+  "identity": {
+    "name": "Casey Chen",
+    "current_title": "Backend Engineer",
+    "location": "Toronto, ON",
+    "years_experience": "5",
+    "contact": {
+      "email": "casey.chen@example.com",
+      "phone": "+1-416-555-0137",
+      "links": [
+        "https://github.com/example",
+        "https://www.linkedin.com/in/example"
+      ]
+    }
+  },
+  "profile_summary": "Backend engineer with five years of experience building Python services and data pipelines on AWS. Owns APIs from design to on-call, cares about reliability and cost, and works closely with data and product teams. Looking for a backend, data or platform engineering role in Toronto or remote in Canada.",
+  "career_highlights": [
+    "Led the move of a reporting API from Flask to FastAPI, cutting p95 latency from 820 ms to 190 ms",
+    "Rebuilt nightly ETL jobs with retries and alerting, raising on-time delivery from 91% to 99.6%",
+    "Cut monthly AWS spend by 28% by rescheduling batch jobs and right-sizing services"
+  ],
+  "core_skills": [
+    "Python",
+    "SQL",
+    "FastAPI",
+    "Flask",
+    "PostgreSQL",
+    "AWS",
+    "Docker",
+    "Airflow",
+    "REST API design",
+    "TypeScript",
+    "React",
+    "GitHub Actions",
+    "Terraform",
+    "Redis"
+  ],
+  "skill_matrix": {
+    "languages": [
+      "Python",
+      "SQL",
+      "TypeScript",
+      "Go"
+    ],
+    "frameworks": [
+      "FastAPI",
+      "Flask",
+      "React",
+      "SQLAlchemy",
+      "pytest"
+    ],
+    "cloud": [
+      "AWS (Lambda, ECS, S3, RDS)",
+      "Terraform"
+    ],
+    "data": [
+      "PostgreSQL",
+      "Airflow",
+      "Redis",
+      "pandas"
+    ],
+    "devops": [
+      "Docker",
+      "GitHub Actions",
+      "Datadog"
+    ],
+    "tools": [
+      "Git",
+      "Linux",
+      "OpenAPI"
+    ],
+    "domains": [
+      "Analytics products",
+      "B2B SaaS",
+      "Data pipelines"
+    ]
+  },
+  "experiences": [
+    {
+      "title": "Backend Engineer",
+      "company": "TrueNorth Analytics",
+      "location": "Toronto, ON",
+      "employment_type": "Full-time",
+      "start_date": "2022-05",
+      "end_date": "present",
+      "duration": "2022-05 - present",
+      "highlights": [
+        "Owns the reporting API (FastAPI, PostgreSQL) used by 300+ business customers, including design reviews and on-call",
+        "Led the move from Flask to FastAPI with async database access, cutting p95 latency from 820 ms to 190 ms",
+        "Rebuilt nightly ETL jobs in Airflow with retries, idempotent loads and alerting; on-time delivery rose from 91% to 99.6%",
+        "Mentors two junior developers and runs the team's code-review guidelines"
+      ],
+      "achievements": [
+        "Cut monthly AWS spend by 28% by rescheduling batch jobs and right-sizing ECS services",
+        "Introduced contract tests from the OpenAPI document, removing a class of breaking API changes"
+      ],
+      "tech_stack": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "Airflow",
+        "AWS",
+        "Docker",
+        "Terraform",
+        "Datadog"
+      ]
+    },
+    {
+      "title": "Software Developer",
+      "company": "HarborStack",
+      "location": "Toronto, ON",
+      "employment_type": "Full-time",
+      "start_date": "2020-01",
+      "end_date": "2022-04",
+      "duration": "2020-01 - 2022-04",
+      "highlights": [
+        "Built REST integrations with payment and shipping providers for an e-commerce platform (Flask, PostgreSQL, Redis)",
+        "Raised test coverage of the order service from 41% to 85% and added CI checks in GitHub Actions",
+        "Built internal admin screens in React and TypeScript for the support team"
+      ],
+      "achievements": [
+        "Reduced failed provider callbacks by 70% with a queue-based retry design"
+      ],
+      "tech_stack": [
+        "Python",
+        "Flask",
+        "PostgreSQL",
+        "Redis",
+        "React",
+        "TypeScript",
+        "GitHub Actions"
+      ]
+    },
+    {
+      "title": "Software Developer (co-op)",
+      "company": "MapleCloud",
+      "location": "Waterloo, ON",
+      "employment_type": "Internship",
+      "start_date": "2018-05",
+      "end_date": "2018-08",
+      "duration": "2018-05 - 2018-08",
+      "highlights": [
+        "Wrote Python tools that automated log collection for the support team",
+        "Added monitoring dashboards for a customer-facing file service"
+      ],
+      "achievements": [],
+      "tech_stack": [
+        "Python",
+        "Linux",
+        "Bash"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Open-source job queue for Postgres",
+      "role": "Author",
+      "duration": "2023 - present",
+      "summary": "A small Python library that runs background jobs on PostgreSQL row locks, for teams that do not want a separate broker.",
+      "impact": [
+        "Used in production by two teams",
+        "180 stars on GitHub"
+      ],
+      "tech_stack": [
+        "Python",
+        "PostgreSQL",
+        "asyncio"
+      ],
+      "links": [
+        "https://github.com/example"
+      ]
+    },
+    {
+      "name": "Transit delay dashboard",
+      "role": "Author",
+      "duration": "2021",
+      "summary": "Collects public transit data every minute and shows delays by route and hour.",
+      "impact": [
+        "Streams about 1 million rows a week into PostgreSQL"
+      ],
+      "tech_stack": [
+        "Python",
+        "Airflow",
+        "PostgreSQL",
+        "React"
+      ],
+      "links": []
+    }
+  ],
+  "education": [
+    "BSc Computer Science - University of Waterloo (2015 - 2019)"
+  ],
+  "certifications": [
+    "AWS Certified Developer - Associate (2023)"
+  ],
+  "languages": [
+    "English",
+    "Mandarin"
+  ],
+  "preferences": {
+    "target_roles": [
+      "Backend Engineer",
+      "Data Engineer",
+      "Platform Engineer"
+    ],
+    "preferred_locations": [
+      "Toronto, ON",
+      "Remote - Canada"
+    ],
+    "employment_types": [
+      "Full-time"
+    ],
+    "work_authorization": "Canadian permanent resident"
+  },
+  "evidence_notes": [
+    "Sample profile of a fictional candidate for the public demo"
+  ],
+  "missing_information": [
+    {
+      "field": "projects[1].impact",
+      "question": "What did the transit delay dashboard lead to, or how many people use it? A number makes this project count.",
+      "priority": "medium"
+    },
+    {
+      "field": "experiences[2].achievements",
+      "question": "What changed thanks to your log-collection tools at MapleCloud, for example hours saved or tickets closed faster?",
+      "priority": "low"
+    }
+  ],
+  "field_confidence": [],
+  "model_name": "user_edit"
+}
