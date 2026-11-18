@@ -21,8 +21,8 @@ and track applications. Current improvement work follows [docs/roadmap.md](docs/
 | PDF / DOCX export | [docs/architecture.md#main-flows](docs/architecture.md#main-flows), [ADR-007](docs/adr/ADR-007-pure-python-export.md) | `core/export/` (`blocks.py` → `pdf.py` / `docx.py`), `app/route_groups/api_documents.py` |
 | Guided flow (setup steps, empty states, job steps, follow-ups) | [ADR-015](docs/adr/ADR-015-guided-journey.md), [docs/api.md](docs/api.md) | `core/journey_service.py`, `web/src/features/journey/`, `web/src/features/onboarding/` |
 | Frontend (React app at `/app`), look and feel | [docs/architecture.md#web-app](docs/architecture.md#web-app), [ADR-008](docs/adr/ADR-008-react-spa.md), [ADR-012](docs/adr/ADR-012-neon-glass-design-language.md) (look, fonts, glass), [ADR-011](docs/adr/ADR-011-design-language-and-fonts.md) (phone and desktop rules) | `web/src/features/`, `web/src/api/` (types generated from `docs/openapi.json`), `app/route_groups/spa.py` |
-| Deploy, Docker, localtest, Cloudflare | [docs/operations.md](docs/operations.md) | `docker-compose*.yml`, `scripts/restart_localtest.sh`, `Dockerfile` |
-| Public demo: read-only sample workspace, live guest workspaces, first-visit tour | [docs/operations.md#demo-read-only-no-keys](docs/operations.md#demo-read-only-no-keys), [ADR-009](docs/adr/ADR-009-read-only-demo-mode.md), [ADR-018](docs/adr/ADR-018-live-demo-guest-workspaces.md) (live demo, guests) | `core/demo.py`, `core/guest_service.py`, `app/guards.py`, `scripts/seed_demo.py`, `scripts/make_sample_resumes.py` (sample résumé in every format), `scripts/check_demo.sh` (health and budget check, [monitoring](docs/operations.md#demo-monitoring)), `config/settings.demo*.yaml`, `docker-compose.demo*.yml`, `web/src/features/tour/` |
+| Docker, demo container, hosting | [docs/operations.md#docker](docs/operations.md#docker) | `Dockerfile`, `docker-compose.demo.yml`, `gunicorn.conf.py` |
+| Public demo: read-only sample workspace, live guest workspaces, first-visit tour | [docs/operations.md#demo-read-only-no-keys](docs/operations.md#demo-read-only-no-keys), [ADR-009](docs/adr/ADR-009-read-only-demo-mode.md), [ADR-018](docs/adr/ADR-018-live-demo-guest-workspaces.md) (live demo, guests) | `core/demo.py`, `core/guest_service.py`, `app/guards.py`, `scripts/seed_demo.py`, `scripts/make_sample_resumes.py` (sample résumé in every format), `config/settings.demo*.yaml`, `docker-compose.demo.yml`, `web/src/features/tour/` |
 | Measure match quality (labelled set, model comparison) | [docs/operations.md#measuring-match-quality](docs/operations.md#measuring-match-quality), [ADR-019](docs/adr/ADR-019-full-job-descriptions.md) | `scripts/labelling.py` (data stays in gitignored `output_localtest/labelling/`) |
 | What to work on next / status | [docs/roadmap.md](docs/roadmap.md) | — |
 | Why a design decision was made | `docs/adr/` — only the ADR for the decision you are changing | — |
@@ -58,12 +58,11 @@ bash scripts/verify.sh                        # full gate: lint, types, tests, r
   inside the project (`.venv/`, `web/node_modules/`); never `pip install` outside `.venv`, `npm -g` or global
   pip/pipx. Services run in Docker Compose with explicit project names and `127.0.0.1` ports. Shared download caches
   (pip, npm, mise) are fine. Anything that cannot follow these rules: open an issue first.
-- Commit directly to `main` (no feature branches or PRs). Run `bash scripts/verify.sh` before every push and commit
-  only if **its own exit status** is 0 (not a `| grep` of its output); CI runs again on each push to `main`.
+- Run `bash scripts/verify.sh` before every commit and commit only if **its own exit status** is 0 (not a `| grep` of
+  its output); CI runs the same checks on every push.
 - Tests must use mock providers (`config/settings.test.yaml`) and temporary databases; never load
   `config/api-keys.env` or a personal `config/resume.yaml` in tests.
-- Live-provider checks happen only on the localtest stack via `bash scripts/restart_localtest.sh`.
-  **Do not start, stop or modify the main stack, the public demo or Cloudflare** (`docker-compose.app.yml`, `docker-compose.demo-public.yml`, the tunnel) unless the maintainer explicitly asks.
+- Live-provider checks run in a separate container with its own data folder, never against a database you care about.
 - Secrets live only in `config/api-keys.env` and `.env` (both gitignored). Never commit keys, passwords or session secrets.
 - Dependencies: edit `requirements.in` / `requirements-dev.in`, then regenerate the locks with
   `pip-compile --generate-hashes --strip-extras --allow-unsafe <file>.in`; never hand-edit the `.txt` locks.

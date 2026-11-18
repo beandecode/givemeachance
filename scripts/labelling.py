@@ -2,15 +2,16 @@
 Collecting and labelling use only the standard library; scoring uses the app's own code.
 
     collect   fetch real postings from the job board into a JSON file (needs ADZUNA_APP_ID / ADZUNA_APP_KEY;
-              run it inside the localtest container, the only place that loads the keys):
-                  docker exec -i openclaw-app-localtest python - collect < scripts/labelling.py
+              run it inside a container that loads the provider keys):
+                  docker exec -i <container> python - collect < scripts/labelling.py
     serve     a local page to label them one by one; scores are never shown, so the labels are not anchored:
                   ./.venv/bin/python scripts/labelling.py serve      ->  http://127.0.0.1:5031/
               (add --host <this computer's LAN address> to label from a phone on the same network)
 
     score     score the same postings with the app's own evaluator for one model, into scores-<model>.json (also
-              inside the localtest container; the profile is built once from resume.txt and reused for every model):
-                  docker exec -i openclaw-app-localtest python - score --model <id> < scripts/labelling.py
+              inside a container that loads the provider keys; the profile is built once from resume.txt and
+              reused for every model):
+                  docker exec -i <container> python - score --model <id> < scripts/labelling.py
 
     fulltext  fetch each posting's full description from the job board's detail page into jobs-full.json; score it
               with `score --jobs jobs-full.json` to see what the missing text costs:

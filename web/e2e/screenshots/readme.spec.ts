@@ -24,7 +24,14 @@ test("README screenshots of the seeded demo", async ({ page, browser }) => {
   await page.getByRole("tabpanel").scrollIntoViewIfNeeded();
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.getByRole("tabpanel").screenshot({ path: `${OUT}/job-resume.png` });
+  // The same document as a whole browser window, for the desktop GIF (every frame there is 16:10).
   await page.setViewportSize({ width: 1440, height: 900 });
+  await page.evaluate(() => {
+    const panel = document.querySelector('[role="tabpanel"]');
+    if (panel) window.scrollTo(0, panel.getBoundingClientRect().top + window.scrollY - 150);
+  });
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${OUT}/tour-resume.png` });
 
   // From 1536 px the board shows all eight stages in two rows without scrolling.
   await page.setViewportSize({ width: 1600, height: 1000 });

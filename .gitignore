@@ -18,9 +18,6 @@ __pycache__/
 
 config/api-keys.env
 config/resume.yaml
-config/cloudflare.env
-ops/cloudflare/*.json
-ops/cloudflare/config.yml
 output/*.db
 output/*.sqlite3
 output/
@@ -46,3 +43,6 @@ docs/images/profile.png
 docs/images/jobs-dark.png
 docs/images/jobs-phone.png
 docs/images/board-phone.png
+docs/images/discover-phone.png
+docs/images/job-phone.png
+docs/images/tour-resume.png

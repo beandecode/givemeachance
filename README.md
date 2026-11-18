@@ -67,7 +67,7 @@ Whether to apply stays the user's choice: the score describes fit, and new gradu
 
 ## How it is checked
 
-- 466 Python tests, 154 web unit tests and 55 browser tests run on every push, all on mock providers and temporary
+- 463 Python tests, 154 web unit tests and 55 browser tests run on every push, all on mock providers and temporary
   databases.
 - The API is fuzzed against its own OpenAPI document; the web app's types are generated from the same document.
 - Every screen passes automated accessibility checks (WCAG 2.1 AA) in light, dark and no-transparency modes, on
@@ -87,9 +87,9 @@ Whether to apply stays the user's choice: the score describes fit, and new gradu
 Phone, light and dark mode get the same care as the desktop: one bottom dock with the tab bar and a next-step bar, a
 full-height swipe deck, stage tabs instead of the board.
 
-<img src="docs/images/discover-phone.png" alt="The swipe deck on a phone" width="200"> <img src="docs/images/job-phone.png" alt="A job on a phone" width="200">
+<img src="docs/images/tour-phone.gif" alt="Phone tour: swipe deck, jobs, a job with its next step, application stages" width="300">
 
-Regenerate them with `(cd web && npm run screenshots)` and `python scripts/make_readme_gif.py`.
+Regenerate the images and both GIFs with `(cd web && npm run screenshots)` and `python scripts/make_readme_gif.py`.
 
 ## Architecture
 
@@ -168,6 +168,6 @@ bash scripts/verify.sh           # full gate, including web unit tests and brows
 | [docs/usage.md](docs/usage.md) | Using the app |
 | [docs/architecture.md](docs/architecture.md) | How it's built |
 | [docs/api.md](docs/api.md) · [docs/error-codes.md](docs/error-codes.md) | HTTP API |
-| [docs/operations.md](docs/operations.md) | Running, Docker, localtest, Cloudflare |
+| [docs/operations.md](docs/operations.md) | Running, testing, measuring, Docker |
 | [docs/roadmap.md](docs/roadmap.md) | What's next |
 | [docs/adr/](docs/adr/) | Architecture decisions |

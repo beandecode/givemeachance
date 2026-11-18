@@ -14,9 +14,6 @@ config/api-keys.env
 .env
 .env.*
 config/resume.yaml
-config/cloudflare.env
-ops/cloudflare/*.json
-ops/cloudflare/config.yml
 output_localtest
 logs_localtest
 data/tmp

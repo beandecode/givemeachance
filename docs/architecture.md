@@ -190,7 +190,6 @@ recorded usage survives a rollback of the caller's work.
 |---|---|
 | `config/settings.yaml` | Production-ish defaults (live providers) |
 | `config/settings.test.yaml` | Mock providers, high limits — tests only |
-| `config/settings.localtest.yaml` | Live providers for the localtest staging stack |
 | `config/settings.demo.yaml`, `config/settings.demo-live.yaml` | Read-only demo (mock providers, zero quota; also seeds the live demo) and the live demo's real providers and daily budgets |
 | `config/search_params.yaml` | Default/admin search config; normal users' configs live in the DB |
 | Env: `SETTINGS_FILE`, `RESUME_FILE`, `SEARCH_PARAMS_FILE` | Override config paths |

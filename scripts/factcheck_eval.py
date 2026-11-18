@@ -10,9 +10,9 @@ audit claim marked "unsupported" contains one of its keywords. Every other audit
 the share that is, is the false-flag rate. Everything here is fictional, so the cases are committed.
 
     run      audit every document not yet audited for one model, into output_localtest/factcheck/<model>.json
-             (inside the localtest container, the only place that loads the keys; safe to run again after an
+             (inside a container that loads the provider keys; safe to run again after an
              interruption), then print the report:
-                 docker exec -i openclaw-app-localtest python - run --model <id> [--set blunt|subtle|all] [--limit N] \
+                 docker exec -i <container> python - run --model <id> [--set blunt|subtle|all] [--limit N] \
                      < scripts/factcheck_eval.py
     report   print the Markdown table for saved results; calls no provider, so it runs on the host:
                  ./.venv/bin/python scripts/factcheck_eval.py report [output_localtest/factcheck/<model>.json ...]

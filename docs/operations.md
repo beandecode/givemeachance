@@ -1,23 +1,21 @@
 # Operations
 
-How to run, deploy and verify the app. Guardrail: **only the localtest stack is used for live-provider
-verification; the main stack, the public demo and Cloudflare (`docker-compose.app.yml`,
-`docker-compose.demo-public.yml`, the tunnel) are not started, stopped or changed unless the maintainer explicitly asks.**
+How to run, verify, measure and package the app.
 
 ## Secrets
 
 | File (gitignored) | Contents | Template |
 |---|---|---|
 | `config/api-keys.env` | `GEMINI_API_KEY`, `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` (loaded by `core/config.py` and compose `env_file`) | `config/api-keys.env.example` |
-| `.env` | `FLASK_SECRET_KEY` (≥32 random chars), `SESSION_COOKIE_SECURE`, `CLOUDFLARE_TUNNEL_TOKEN`, `ADMIN_BOOTSTRAP_*` (compose reads it automatically) | `.env.example` |
+| `.env` | `FLASK_SECRET_KEY` (≥32 random chars), `SESSION_COOKIE_SECURE`, `REGISTRATION_MODE`, `ADMIN_BOOTSTRAP_*`, `DEMO_FLASK_SECRET_KEY` (compose reads it automatically) | `.env.example` |
 
 Other runtime settings: `REGISTRATION_MODE` (default `closed`; `open` enables self-service sign-up — accounts otherwise
 come from `ADMIN_BOOTSTRAP_*`). `TRUSTED_PROXY_HOPS` (default `0`) — set to the number of reverse proxies in front of the
-app (e.g. `1` behind Cloudflare Tunnel) so client IP and scheme come from `X-Forwarded-*`; leave `0` when the port
+app (e.g. `1` behind one reverse proxy or tunnel) so client IP and scheme come from `X-Forwarded-*`; leave `0` when the port
 is reachable directly, otherwise clients can spoof those headers.
 
 Generate a session secret: `python -c 'import secrets; print(secrets.token_urlsafe(48))'`.
-The app refuses to start with a missing or placeholder `FLASK_SECRET_KEY`. Rotate the tunnel token if it leaks.
+The app refuses to start with a missing or placeholder `FLASK_SECRET_KEY`.
 
 ## Local (no Docker)
 
@@ -62,13 +60,14 @@ architecture code map, undocumented task types. Tests never load personal creden
 How well the score agrees with a person's judgment, on real postings (roadmap phase 11,
 [ADR-019](adr/ADR-019-full-job-descriptions.md)). Everything lives in the gitignored `output_localtest/labelling/`:
 the postings belong to their publishers, `resume.txt` is a résumé with names and contacts removed, and the labels are
-the labeller's own. Keys are only loaded inside the localtest container, so the commands that call a provider run there.
+the labeller's own. The commands that call a provider run where the keys are loaded: here, a container started from
+the image with `config/api-keys.env` and live providers, shown as `<container>`.
 
 ```bash
-docker exec -i openclaw-app-localtest python - collect < scripts/labelling.py      # ~48 postings -> jobs.json
+docker exec -i <container> python - collect < scripts/labelling.py      # ~48 postings -> jobs.json
 ./.venv/bin/python scripts/labelling.py fulltext                                    # full text -> jobs-full.json
 ./.venv/bin/python scripts/labelling.py serve [--host <LAN address>]                # label at :5031, scores hidden
-docker exec -i openclaw-app-localtest python - score --model <id> --jobs jobs-full.json < scripts/labelling.py
+docker exec -i <container> python - score --model <id> --jobs jobs-full.json < scripts/labelling.py
 ```
 
 `serve` has no sign-in: bind it to a LAN address only on a network you trust, and stop it when done. `score` builds a
@@ -83,37 +82,17 @@ apply-above-skip number uses the total score.
 The document fact check is measured the same way ([ADR-016](adr/ADR-016-grounded-documents.md#measured)), on 32
 committed documents about the fictional demo candidate with planted false claims, in a blunt set (20, invented facts)
 and a subtle set (12, real facts bent), one call per document and model:
-`docker exec -i openclaw-app-localtest python - run --model <id> [--set blunt|subtle|all] [--limit N] <
+`docker exec -i <container> python - run --model <id> [--set blunt|subtle|all] [--limit N] <
 scripts/factcheck_eval.py` audits them into `output_localtest/factcheck/<model>.json` (resumable) and prints, per set,
 the share of planted claims caught per type and the false-flag rate; `./.venv/bin/python scripts/factcheck_eval.py report` prints the table again on the host.
 
-## Docker stacks
+## Docker
 
 The image is built in two stages: Node compiles the web app (`web/` → `app/spa_dist`), then the Python runtime image
-copies the result; Node is not in the final image. Compose project names are explicit so stacks never collide.
-
-| Stack | Files | Project | Port | Data | Purpose |
-|---|---|---|---|---|---|
-| Main | `docker-compose.app.yml` | `openclaw-main` | 127.0.0.1:5001 | `output/`, `logs/` | The full app with real providers (2 gunicorn workers). Its container is stopped while the public demo answers on the tunnel; its data stays in `output/` |
-| Main + tunnel | `+ docker-compose.cloudflare.yml` | `openclaw-main` | none (internal only) | same | Public link via Cloudflare |
-| Localtest | `docker-compose.localtest.yml` | `openclaw-localtest` | `${LOCALTEST_BIND_ADDR:-127.0.0.1}:5011` | `output_localtest/`, `logs_localtest/` | Live-provider staging (1 worker while on SQLite) |
-| Demo | `docker-compose.demo.yml` | `gmc-demo` | 5021 | tmpfs (`output_demo/`, `logs_demo/`) | Read-only demo, no keys ([ADR-009](adr/ADR-009-read-only-demo-mode.md)) |
-| Public demo | `+ docker-compose.demo-public.yml` | `gmc-demo` | none (tunnel) | same | What the public address serves: the demo plus live guest workspaces ([ADR-018](adr/ADR-018-live-demo-guest-workspaces.md)) |
-
-### Localtest (staging with real providers)
-
-```bash
-bash scripts/restart_localtest.sh
-```
-
-The wrapper refuses non-localtest compose files, checks that `config/api-keys.env` has real keys and that
-`config/settings.localtest.yaml` uses real providers, then runs `down → build → up` non-interactively
-(no compose menu/TTY progress) and polls `http://<bind address>:5011/health`.
-
-**Testing from a phone:** set `LOCALTEST_BIND_ADDR=<this Mac's LAN IP>` in the gitignored `.env` (never `0.0.0.0`), run the
-restart script and open `http://<ip>:5011/app/` on a device on the same network. The IP can change with DHCP; reserve it
-in the router or update `.env`. The app is then reachable by everyone on that network and uses live provider keys, so
-remove the line (or leave it empty) and restart when you are done.
+copies the result; Node is not in the final image. It runs as the non-root user `app` (uid 10001); application code is
+root-owned and read-only, only `output*/` and `logs*/` are writable. The base image is pinned by digest in the
+`Dockerfile`. Gunicorn settings are in `gunicorn.conf.py` (`WEB_CONCURRENCY`, `GUNICORN_THREADS`, `GUNICORN_TIMEOUT`;
+access log to stdout). CI builds the image on every push.
 
 ### Demo (read-only, no keys)
 
@@ -132,105 +111,26 @@ questions so "Fill the gaps" shows, and the résumé step shows the sample résu
 format; live guests can build a profile from it. After editing `casey-chen.txt`, run
 `./.venv/bin/python scripts/make_sample_resumes.py` to render the PDF, Word and PNG again.
 
-**On the public address (live demo).** `jobs.<your-domain>` is served by this demo, not by the main stack. The overlay
-`docker-compose.demo-public.yml` does two things:
+### Live demo (guest workspaces)
 
-- It joins the demo container to the main stack's network under the name `app`, which is where the tunnel sends that
-  hostname, so nothing changes in the Cloudflare dashboard. The main `openclaw-app` container must stay stopped while
-  the overlay is up (two containers must not answer to `app`).
-- It turns on the live demo ([ADR-018](adr/ADR-018-live-demo-guest-workspaces.md)): `DEMO_LIVE=true`, the settings
-  file `config/settings.demo-live.yaml` (real providers; 100 AI and 30 job-board calls a day for the whole demo, 25 and
-  3 per guest), the provider keys from `config/api-keys.env` and a session key `DEMO_FLASK_SECRET_KEY` from `.env`.
-  Change the daily budget in `config/settings.demo-live.yaml`. The app itself caps new guests: `DEMO_GUESTS_PER_DAY`
-  (default 40) in total and `DEMO_GUESTS_PER_CLIENT` (default 5) per visitor address in 24 hours, which needs
-  `TRUSTED_PROXY_HOPS=1` behind the tunnel (set by the overlay).
+The public demo adds live guest workspaces on top of the read-only one
+([ADR-018](adr/ADR-018-live-demo-guest-workspaces.md)). Run the same image with `DEMO_LIVE=true`, the settings file
+`config/settings.demo-live.yaml` (real providers; 100 AI and 30 job-board calls a day for the whole demo, 25 and 3 per
+guest), the provider keys from `config/api-keys.env` and a session key `DEMO_FLASK_SECRET_KEY`. Change the daily budget
+in that settings file. The app itself caps new guests: `DEMO_GUESTS_PER_DAY` (default 40) in total and
+`DEMO_GUESTS_PER_CLIENT` (default 5) per visitor address in 24 hours, which needs `TRUSTED_PROXY_HOPS` set to the
+number of proxies in front of it. Keep the container off the host's ports and reach it only through the proxy.
+`curl -s <demo address>/api/v1/config` then shows `"demo_mode": true, "demo_live": true`.
 
-```bash
-docker stop openclaw-app                                  # only if it is running
-docker compose -f docker-compose.demo.yml -f docker-compose.demo-public.yml up -d --build
-curl -s https://jobs.<your-domain>/api/v1/config          # "demo_mode": true, "demo_live": true
-```
+### Hosting the full app publicly
 
-After a code change, run the `up -d --build` line again (about half a minute of downtime while the sample data is
-seeded; guest workspaces are lost, the day's quota count too). The `cloudflared` container and any other site behind the
-tunnel are not touched by any of this. To go back to the read-only demo, start it without the overlay's `DEMO_LIVE`
-(set it to `"false"`); the keys are then unused.
-
-### Demo monitoring
-
-`scripts/check_demo.sh` checks two things and changes nothing: the public address answers `/health`, and today's calls
-(AI and job board, from the demo's own usage table, read inside the container) are below 90% of the demo's daily
-limits in `config/settings.demo-live.yaml`. Every run appends a line to `logs/demo-check.log`; a problem also shows a
-macOS notification, once per change of state, and exits 1. Override `DEMO_URL`, `DEMO_CONTAINER` and `WARN_AT` in the
-environment (for example `DEMO_URL=https://jobs.invalid.example bash scripts/check_demo.sh` to see the alert).
-
-To run it every 15 minutes on this Mac, put the repository path into the template and load it (a manual step):
-
-```bash
-sed "s|__PROJECT__|$PWD|g" scripts/com.givemeachance.demo-check.plist > ~/Library/LaunchAgents/com.givemeachance.demo-check.plist
-launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.givemeachance.demo-check.plist
-launchctl bootout "gui/$(id -u)/com.givemeachance.demo-check"     # to stop it
-```
-
-The Mac must be awake and Docker running; a sleeping Mac checks nothing.
-
-### Main stack (only when explicitly requested)
-
-```bash
-docker compose -f docker-compose.app.yml up -d --build
-curl http://127.0.0.1:5001/health
-docker compose -f docker-compose.app.yml down
-```
-
-SQLite lives under the bind-mounted `output/`, so stop/start keeps data.
-
-Image: runs as the non-root user `app` (uid 10001); application code is root-owned and read-only, only `output*/` and
-`logs*/` are writable. Base image is pinned by digest in the `Dockerfile` — bump it deliberately. Gunicorn settings are
-in `gunicorn.conf.py` (`WEB_CONCURRENCY`, `GUNICORN_THREADS`, `GUNICORN_TIMEOUT`; access log to stdout); a compose
-`command:` with flags overrides them (localtest uses 1 worker).
-
-## Public link via Cloudflare Tunnel (only when explicitly requested)
-
-Today the tunnel's `jobs.<your-domain>` hostname reaches the public demo ([above](#demo-read-only-no-keys)). The steps
-below put the main stack behind the tunnel instead; doing that means stopping the demo overlay first (only one
-container may answer to `app`).
-
-Assets: `docker-compose.cloudflare.yml` (removes the host port, adds `cloudflared`),
-`scripts/preflight_secure_link.sh`, `scripts/start_public_secure_link.sh`,
-`scripts/restart_public_secure_link.sh` (non-interactive restart + health checks).
-
-The connector image is pinned (`cloudflare/cloudflared:2026.10.3`); never use `latest`, which does not refresh an image
-already pulled. Versions before 2026.10.2 still trust the compromised eMudhra (emSign) intermediates (Cloudflare notice,
-October 2026). This one connector can also serve other sites on the same Docker network, so never `down` the stack just to upgrade it.
-To upgrade: bump the tag, then
-`docker compose -f docker-compose.app.yml -f docker-compose.cloudflare.yml pull cloudflared && docker compose -f docker-compose.app.yml -f docker-compose.cloudflare.yml up -d --no-deps cloudflared`
-(about a second of downtime on both hostnames; the app and the network are untouched), and check
-`docker exec openclaw-cloudflared cloudflared --version` and the `Registered tunnel connection` log lines. Both origins
-are plain HTTP inside the Docker network, so no origin certificate is involved; never set `noTLSVerify`.
-
-1. `cp .env.example .env`, fill `FLASK_SECRET_KEY` and `CLOUDFLARE_TUNNEL_TOKEN`; ensure `config/api-keys.env` exists.
-2. One-time in Cloudflare Zero Trust: Networks → Tunnels → create tunnel (Docker connector, copy token);
-   add public hostname `jobs.<your-domain>` → service `HTTP` → `http://app:5001`.
-3. Choose an access mode:
-   - **Access mode (recommended for a showcase):** Zero Trust → Access → Applications → self-hosted app for
-     the hostname; allow only your identity provider users / a reviewer allowlist (email OTP or Google/GitHub;
-     Access isn't meant for a shared username/password; machines use Service Tokens).
-   - **Public mode:** no Access app. Then turn on WAF Managed Rules and Bot Fight Mode, and add rate limits, e.g.
-     `POST /api/v1/session` 5/min/IP → challenge then block 10 min; `POST /api/v1/account` 3/min → block 30 min;
-     `POST /api/v1/searches` 2/min → block 15 min; `/api/v1/profile/synthesize|supplement` 3/min,
-     `/api/v1/jobs/*/documents` 4/min → challenge; host-wide 120/min → challenge. Optionally restrict countries / challenge high-risk ASNs.
-4. `bash scripts/preflight_secure_link.sh`, then `bash scripts/start_public_secure_link.sh`.
-5. Check: `docker compose -f docker-compose.app.yml -f docker-compose.cloudflare.yml ps` (app must **not**
-   publish `0.0.0.0:5001`) and `... logs -f cloudflared` (look for `Registered tunnel connection`).
-   Open the hostname; in Access mode a login challenge must appear first.
-6. Stop: `docker compose -f docker-compose.app.yml -f docker-compose.cloudflare.yml down`.
-
-Host checklist: the router does not forward 5001/80/443 to the machine; the local firewall is on; the app is
-started with the tunnel overlay only when public exposure is intended.
-
-Risk: Access mode + rate limits + strong app auth is acceptable for a demo; Public mode with weak auth
-hygiene invites credential stuffing and scraping. The app itself locks a username for 15 minutes after 10 failed
-sign-ins; edge rate limits are still needed against attempts spread over many usernames.
+Keep the app behind a reverse proxy or tunnel with no host port published, set `SESSION_COOKIE_SECURE=true` and
+`TRUSTED_PROXY_HOPS`, and keep registration closed. In front of it, either an identity check (recommended for a
+showcase) or WAF rules, bot protection and rate limits, e.g. `POST /api/v1/session` 5/min per IP → challenge, then block
+10 min; `POST /api/v1/account` 3/min → block 30 min; `POST /api/v1/searches` 2/min → block 15 min;
+`/api/v1/profile/synthesize|supplement` 3/min and `/api/v1/jobs/*/documents` 4/min → challenge; 120/min per host →
+challenge. The app itself locks a username for 15 minutes after 10 failed sign-ins; edge rate limits are still needed
+against attempts spread over many usernames.
 
 ## Logs
 
@@ -245,7 +145,7 @@ applied to error messages that are stored or shown (`failure_summary`, `user_mes
 app and the worker with its correlation ID:
 
 ```bash
-docker compose -f docker-compose.localtest.yml logs app_localtest | grep req_0123abcd
+docker logs <container> 2>&1 | grep req_0123abcd
 ```
 
 `app.log_path` in the settings files is not used (everything goes to stderr).

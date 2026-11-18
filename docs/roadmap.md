@@ -1,28 +1,22 @@
 # Roadmap
 
-Single source for planned work and its status. Work one phase at a time; each phase is confirmed before the next
-phase starts. Tick items in the same commit that completes them. Start with the status table; each phase below has the
-detail.
+Planned work and its status, one phase at a time. Start with the status table; each phase below has the detail.
 
-**Direction (decided 2026-10-20):** a job-search assistant shown as a portfolio piece — a safe public demo and a
-closed-registration app; no open sign-up. Flask + SQLite stay ([ADR-005](adr/ADR-005-product-fit-and-growth-triggers.md)); PostgreSQL or an
+**Direction:** a job-search assistant shown as a portfolio piece — a safe public demo and a closed-registration app; no
+open sign-up. Flask + SQLite stay ([ADR-005](adr/ADR-005-product-fit-and-growth-triggers.md)); PostgreSQL or an
 external queue only if measured needs appear.
 
 ## Status
 
 | Phase | State | What is left |
 |---|---|---|
-| 0–9 | Done | — ([short record](#done-phases-0-to-10)) |
-| [10 Make it visible](#phase-10--make-it-visible) | Done | — |
+| 0–10, 12 | Done | — ([short record](#done)) |
 | [11 Prove the matching](#phase-11--prove-the-matching-and-the-fact-check) | Done | — |
-| [12 Launch](#phase-12--launch) | Done | — |
 | [13 Job supply](#phase-13--job-supply) | Planned | Entry-level search for new graduates, URL import |
 | [14 Data and account safety](#phase-14--data-and-account-safety) | Planned | Backups, export and delete, account self-service |
 | [15 Task reliability and types](#phase-15--task-reliability-and-types) | Planned | Retries, chained tasks, structured output, mypy |
 
-Phases 10 to 12 made the project visible and measured it against hand labels; phases 13 to 15 are planned.
-
-## Done (phases 0 to 10)
+## Done
 
 Details are in the ADRs and the code; this is the short record.
 
@@ -43,24 +37,15 @@ Details are in the ADRs and the code; this is the short record.
   ([ADR-011](adr/ADR-011-design-language-and-fonts.md) to [ADR-014](adr/ADR-014-user-controlled-search-and-scoring.md))
 - **9 Guidance, trust, funnel** — guided flow, documents checked against the profile, hard filters and a relevance
   pre-score before any AI call ([ADR-015](adr/ADR-015-guided-journey.md) to [ADR-017](adr/ADR-017-search-funnel.md))
-- **10 so far** — fresh repository with one squashed commit and an MIT licence; public demo on the tunnel with live
-  guest workspaces ([ADR-018](adr/ADR-018-live-demo-guest-workspaces.md)), a first-visit tour, a complete sample
-  profile, résumé input from a sample in every format and sample gap questions; documents that argue for the candidate
-  and never name a gap ([ADR-016](adr/ADR-016-grounded-documents.md)); leftovers and duplicate tests removed
-
-## Phase 10 — Make it visible
-
-What is left before launch. Done items are in the [record above](#done-phases-0-to-10).
-
-- [x] Demo monitoring: `scripts/check_demo.sh` checks `/health` and the demo's daily budget and notifies the maintainer; a
-  launchd template runs it every 15 minutes (loaded by hand)
-- [x] README screenshots and GIF retaken with the résumé step and "Fill the gaps"
-- Acceptance: a stranger opens the demo link from the README on a phone
+- **10 Visible** — public demo with live guest workspaces ([ADR-018](adr/ADR-018-live-demo-guest-workspaces.md)), a
+  first-visit tour, a complete sample profile, résumé input from a sample in every format and sample gap questions;
+  documents that argue for the candidate and never name a gap ([ADR-016](adr/ADR-016-grounded-documents.md));
+  screenshots and tour GIFs
+- **12 Published** — audit for secrets and personal data, MIT licence, case study page at `/case-study`
 
 ## Phase 11 — Prove the matching and the fact check
 
-The measure is the score against fit, above all the level labels; apply decisions are for reference only (decided
-2026-11-14). The deck threshold stays a user setting. Results so far are in the README ("How well it scores") and in
+The measure is the score against fit, above all the level labels; apply decisions are for reference only. The deck threshold stays a user setting. Results so far are in the README ("How well it scores") and in
 [ADR-010](adr/ADR-010-scoring-computed-in-code.md) and [ADR-019](adr/ADR-019-full-job-descriptions.md).
 
 - [x] Labelled set: 48 real postings collected, 47 labelled blind to the scores; data in the gitignored
@@ -76,15 +61,6 @@ The measure is the score against fit, above all the level labels; apply decision
 - [x] Level as its own signal: the years of experience a posting asks for, read from the full text, shown on the card,
   the row and the job page ("asks for 5+ years"), next to the score
 - Acceptance: one command re-runs the evaluation on the localtest stack and reproduces the README numbers
-
-## Phase 12 — Launch
-
-- [x] Final audit of every file and commit for secrets and personal data (the labelled résumé, real names, LAN
-  addresses, private paths); `output*/` and the labelling data never in git
-- [x] Published as a single-commit snapshot with a social preview image and a green CI badge on the public page
-- [x] Case study as a web page: problem, approach, how it was measured, what the measurements changed (the score cap
-  that hid fitting jobs, the profile bullets cut at commas, full postings instead of previews), linked from the README
-- Acceptance: the README, the demo and the case study tell the same story with the same numbers
 
 ## Phase 13 — Job supply
 
