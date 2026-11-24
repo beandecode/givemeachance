@@ -33,7 +33,7 @@
 <section>
 <h2>How it was measured</h2>
 <p>I collected 48 real postings and labelled 47 of them by hand for an early-career data-science résumé, before looking at any score. Each got an apply, maybe or skip label and a level: fits, too senior, too junior or unsure.</p>
-<p>The level measure is the share of pairs, one role that fits and one that asks for more, where the seniority rating puts the fitting role higher. 0.50 is a coin flip. Intervals come from 2,000 bootstrap resamples with a fixed seed. One command, <code>python scripts/labelling.py report</code>, reproduces the matching figures on this page, given the labelled data, which stays private. The fact-check figures come from <code>scripts/factcheck_eval.py</code>.</p>
+<p>The level measure is the share of pairs, one role that fits and one that asks for more, where the seniority rating puts the fitting role higher. 0.50 is a coin flip. One command, <code>python scripts/labelling.py report</code>, reproduces the matching figures on this page, given the labelled data, which stays private. The fact-check figures come from <code>scripts/factcheck_eval.py</code>.</p>
 <div class="rows" role="list">
 <div class="row" role="listitem"><b>Level: roles that fit ranked above roles that ask for more</b>
 <div class="track"><div class="fill w68"></div></div><span class="val">Before: 0.68 (preview, older model)</span>
@@ -53,7 +53,6 @@
 <div><span class="big">1 → 7</span><p>Fitting roles in the deck. A cap tied the score to "3+ years" or a missing skill and hid good matches. Now only a hard gate, such as a required licence, caps a score.</p></div>
 <div><span class="big">0.68 → 0.83</span><p>Level agreement after scoring the full posting instead of a preview, with the prompt and profile fixes made along the way (the first run used the preview and an older model). Postings that state the years asked went from 1 of 48 to 39 of 48.</p></div>
 </div>
-<p>The measurements also exposed a bug: profile bullets were being cut at commas. That is fixed, and a bullet now stays whole.</p>
 <p>The years a posting asks for are now shown next to the score, read from the text by plain code with no model call. The score is unchanged, because the person applying decides whether to apply above their level.</p>
 <figure><img src="/case-study/profile-gaps.png" alt="The profile page asking the user to fill the gaps it found"><figcaption>The profile step lists the gaps it found and asks the user to fill them instead of guessing.</figcaption></figure>
 </section>
@@ -89,7 +88,7 @@
 <section>
 <h2>Limits</h2>
 <p>This is 47 postings, one labeller and one early-career résumé, so the intervals are wide. Only 7 postings are labelled skip, which is why the apply-versus-skip interval runs from 0.56 to 0.92. The score describes fit and does not predict who gets hired. The numbers show the changes helped on this set. They do not show how it will do on every résumé.</p>
-<p>The rest of the engineering is described in the repository: more than 460 Python tests, 150 web tests and 55 browser tests on mock providers, accessibility checks on every screen, a demo with a read-only sample workspace and live guest workspaces held to a daily AI budget, and monitoring that sends a notification when the demo is down or near its limit.</p>
+<p>The rest of the engineering is described in the repository: Python, web and browser tests on mock providers, accessibility checks on every screen, and a demo with a read-only sample workspace and live guest workspaces held to a daily AI budget.</p>
 <div class="links"><a href="/app/">Try the live demo</a><a href="https://github.com/beandecode/givemeachance">Read the code</a></div>
 </section>
 </main>
